@@ -12,19 +12,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.gft.lirics.domain.Usuario;
 import br.gft.lirics.repositories.UsuarioRepository;
 
 @RunWith(SpringRunner.class)
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 @SpringBootTest
 //@Sql(scripts = {"/resource/import_usuarios.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class UsuarioRepositoryTest {
 
-	private static final String EMAIL = "email@teste.com";
+	private static final String EMAIL = "email@test.com";
 	
 	@Autowired
 	UsuarioRepository repository;
@@ -63,6 +63,5 @@ public class UsuarioRepositoryTest {
 		
 		assertTrue(response.isPresent());
 		assertEquals(response.get().getEmail(), EMAIL);
-		repository.delete(u);
 	}
 }
