@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -31,9 +31,17 @@ public class UsuarioRepositoryTest {
 	
 	@BeforeEach
 	public void setUp() {
+	       Usuario u = new Usuario();
+	        u.setNome("SetUp User");
+	        u.setCpf("123.654.987-89");
+	        u.setSenha("123456");
+	        u.setEmail(EMAIL);
+	        repository.save(u);
 	}
-	@After
+	@AfterEach
 	public void tearDown() {
+	    
+	    repository.deleteAll();
 	}
 	
 	@Test
@@ -47,17 +55,10 @@ public class UsuarioRepositoryTest {
 		Usuario response = repository.save(usuario);
 		
 		assertNotNull(response);
-		repository.delete(response);
 	}
 	
 	@Test
 	public void testBuscarPorEmail() {
-		Usuario u = new Usuario();
-		u.setNome("SetUp User");
-		u.setCpf("123.654.987-89");
-		u.setSenha("123456");
-		u.setEmail(EMAIL);
-		repository.save(u);
 		
 		Optional<Usuario> response = repository.findByEmailEquals(EMAIL);
 		
