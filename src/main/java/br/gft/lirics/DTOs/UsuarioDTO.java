@@ -16,7 +16,7 @@ public class UsuarioDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private Long usuarioId;
+    private Long id;
     
     @NotBlank
     private String nome;
@@ -24,7 +24,7 @@ public class UsuarioDTO {
     @NotBlank
     private String cpf;
     
-    @Email
+    @Email(message= "Email inválido.")
     @NotBlank
     private String email;
     

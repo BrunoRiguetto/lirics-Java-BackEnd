@@ -12,23 +12,23 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "\"users\"")
+//@Table(name = "\"users\"")
 @Data
 public class Usuario implements Serializable{
 	private static final long serialVersionUID = 5028154602127426877L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "\"id\"")
-	private Long usuarioId;
+	//@Column(name = "\"id\"")
+	private Long id;
 	
-	@Column(name = "\"name\"")
+	//@Column(name = "\"name\"")
 	private String nome;
 	
 	private String cpf;
 	
 	private String email;
 	
-	@Column(name = "\"password\"")
+	//@Column(name = "\"password\"")
 	private String senha;
 }

@@ -1,8 +1,13 @@
 package br.gft.lirics.controllers;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,9 +30,10 @@ import br.gft.lirics.services.UsuarioService;
 @AutoConfigureMockMvc
 public class UsuarioControllerTest {
 
+    private static final Long ID = 1L;
     private static final String NOME = "Usuario Teste";
     private static final String CPF = "000.002.245-00";
-    private static final String EMAIL = "email@test.com";
+    private static final String EMAIL = "email2@gmail.com";
     private static final String SENHA = "123456";
     private static final String URL = "/api/v1/usuarios";
     
@@ -39,30 +44,49 @@ public class UsuarioControllerTest {
     MockMvc mvc;
     
     @Test
-    public void testSave() throws Exception{
-        BDDMockito.given(service.salvar(Mockito.any(Usuario.class))).willReturn(getMockUser());
-        mvc.perform(MockMvcRequestBuilders.post(URL).content(getJsonPayload())
+    public void testSalvar() throws Exception{
+        
+        when(service.salvar(Mockito.any(Usuario.class))).thenReturn(getMockUser());
+        
+        mvc.perform(post(URL)
+                .content(getJsonPayload(ID, NOME, CPF, EMAIL, SENHA))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.status().isCreated());
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.id").value(ID))
+            .andExpect(jsonPath("$.data.nome").value(NOME))
+            .andExpect(jsonPath("$.data.cpf").value(CPF))
+            .andExpect(jsonPath("$.data.email").value(EMAIL))
+            .andExpect(jsonPath("$.data.senha").value(SENHA));
+    }
+    
+    @Test
+    public void testSalvarUsuarioInvalido() throws JsonProcessingException, Exception {
+        mvc.perform(MockMvcRequestBuilders.post(URL).content(getJsonPayload(ID, NOME, CPF, "email", SENHA))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors[0]").value("Email inválido."));
     }
     
     public Usuario getMockUser() {
         Usuario u = new Usuario();
+        u.setId(ID);
         u.setNome(NOME);
-        u.setCpf(CPF);
         u.setEmail(EMAIL);
+        u.setCpf(CPF);
         u.setSenha(SENHA);
         
         return u;        
     }
     
-    public String getJsonPayload() throws JsonProcessingException {
+    public String getJsonPayload(Long id, String nome, String cpf, String email, String senha) throws JsonProcessingException {
         UsuarioDTO dto = new UsuarioDTO();
-        dto.setNome(NOME);
-        dto.setCpf(CPF);
-        dto.setEmail(EMAIL);
-        dto.setSenha(SENHA);
+        dto.setId(id);
+        dto.setNome(nome);
+        dto.setCpf(cpf);
+        dto.setEmail(email);
+        dto.setSenha(senha);
         
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(dto);
